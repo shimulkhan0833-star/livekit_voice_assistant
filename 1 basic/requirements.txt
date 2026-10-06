@@ -1,0 +1,6 @@
+livekit-agents
+livekit-plugins-ai-coustics
+livekit-plugins-google
+livekit-plugins-groq
+livekit-plugins-elevenlabs
+python-dotenv

@@ -1,0 +1,37 @@
+conversations
+├── id
+├── room_id
+├── customer_id
+├── started_at
+├── ended_at
+└── summary
+
+
+##############################
+
+
+messages
+├── id
+├── conversation_id
+├── role
+├── content
+├── created_at
+└── metadata
+
+#################################
+conversations
+-----------------------------------------
+id: 101
+room_id: call_abcd123
+customer_id: 55
+started_at: ...
+ended_at: ...
+
+#################################
+messages
+------------------------------------------------
+1 | 101 | user      | Hello
+2 | 101 | assistant | Hi, how can I help you?
+3 | 101 | user      | I need my order status
+4 | 101 | assistant | Please give me your order ID
+

@@ -1,0 +1,20 @@
+User speaks
+   ↓
+LiveKit / Vapi / Twilio
+   ↓
+Speech-to-Text
+   ↓
+LangGraph Agent
+   ↓
+GPT / Gemini / Claude
+   ↓
+Tools
+├── Database
+├── Calendar
+├── CRM
+├── Google Sheets
+└── APIs
+   ↓
+Text-to-Speech
+   ↓
+User hears response

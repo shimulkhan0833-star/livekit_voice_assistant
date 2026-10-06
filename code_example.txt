@@ -1,0 +1,335 @@
+Let's make a **simple self-hosted LiveKit voice agent demo**.
+
+This example shows:
+
+```text
+Browser/User
+      |
+      ↓
+Self-hosted LiveKit Server
+      |
+      ↓
+Python Voice Agent
+      |
+      ↓
+STT → LLM → TTS
+```
+
+We will use:
+
+- **LiveKit Server** (self-hosted)
+- **LiveKit Agents SDK**
+- **OpenAI Whisper STT**
+- **Gemini LLM**
+- **ElevenLabs TTS**
+
+---
+
+## 1. Run LiveKit Server locally
+
+Install Docker first.
+
+Create:
+
+```
+livekit.yaml
+```
+
+```yaml
+port: 7880
+
+rtc:
+  port_range_start: 50000
+  port_range_end: 60000
+
+keys:
+  devkey: devsecret
+```
+
+Run:
+
+```bash
+docker run \
+--rm \
+-p 7880:7880 \
+-p 7881:7881 \
+-p 50000-60000:50000-60000/udp \
+-v $(pwd)/livekit.yaml:/etc/livekit.yaml \
+livekit/livekit-server \
+--config /etc/livekit.yaml
+```
+
+Now your LiveKit server is:
+
+```
+ws://localhost:7880
+```
+
+---
+
+# 2. Install Python Agent SDK
+
+```bash
+pip install livekit-agents
+pip install livekit-plugins-openai
+pip install livekit-plugins-elevenlabs
+```
+
+---
+
+# 3. Environment file
+
+`.env`
+
+```env
+LIVEKIT_URL=ws://localhost:7880
+
+LIVEKIT_API_KEY=devkey
+LIVEKIT_API_SECRET=devsecret
+
+OPENAI_API_KEY=your_openai_key
+
+GEMINI_API_KEY=your_gemini_key
+
+ELEVEN_API_KEY=your_elevenlabs_key
+```
+
+---
+
+# 4. Voice Agent Code
+
+Create:
+
+```
+agent.py
+```
+
+```python
+import os
+from dotenv import load_dotenv
+
+from livekit import agents
+from livekit.agents import (
+    AutoSubscribe,
+    JobContext,
+    WorkerOptions,
+    cli
+)
+
+from livekit.plugins import openai
+from livekit.plugins import elevenlabs
+
+
+load_dotenv()
+
+
+async def entrypoint(ctx: JobContext):
+
+    print("Connecting to room:", ctx.room.name)
+
+
+    await ctx.connect(
+        auto_subscribe=AutoSubscribe.AUDIO
+    )
+
+
+    # Create voice pipeline
+
+    agent = agents.Agent(
+        instructions="""
+        You are a helpful AI voice assistant.
+        Keep answers short because this is a voice call.
+        """
+    )
+
+
+    session = agents.AgentSession(
+
+        # Speech To Text
+        stt=openai.STT(
+            model="whisper-1"
+        ),
+
+
+        # LLM
+        llm=openai.LLM(
+            model="gpt-4.1-mini"
+        ),
+
+
+        # Text To Speech
+        tts=elevenlabs.TTS(
+            voice="Rachel"
+        )
+    )
+
+
+    await session.start(
+        room=ctx.room,
+        agent=agent
+    )
+
+
+    await session.say(
+        "Hello! I am your AI voice assistant."
+    )
+
+
+
+if __name__ == "__main__":
+
+    cli.run_app(
+        WorkerOptions(
+            entrypoint_fnc=entrypoint
+        )
+    )
+```
+
+---
+
+# 5. Start the AI agent
+
+Run:
+
+```bash
+python agent.py
+```
+
+Output:
+
+```
+Connecting to room: voice-room
+Agent started
+```
+
+---
+
+# 6. User joins the room
+
+Your frontend would use LiveKit SDK:
+
+Example:
+
+```javascript
+const room = new Livekit.Room();
+
+await room.connect(
+ "ws://localhost:7880",
+ token
+);
+```
+
+Now:
+
+```
+Room: voice-room
+
+Participants:
+
+1. User
+   🎤 microphone
+
+2. AI Agent
+   🔊 voice output
+```
+
+---
+
+# Full flow
+
+When user speaks:
+
+```
+User microphone
+
+        ↓
+
+LiveKit Room
+
+        ↓
+
+STT
+(Whisper)
+
+        ↓
+
+Gemini/GPT
+
+        ↓
+
+TTS
+(ElevenLabs)
+
+        ↓
+
+LiveKit Audio Track
+
+        ↓
+
+User hears response
+```
+
+---
+
+## Adding LangGraph
+
+Instead of:
+
+```python
+llm=openai.LLM()
+```
+
+you can do:
+
+```
+LiveKit Agent
+       |
+       |
+LangGraph
+       |
+ ----------------
+ |              |
+ RAG          Tools
+ |
+Vector DB
+```
+
+Example:
+
+```text
+User:
+"What is my order status?"
+
+        ↓
+
+LangGraph
+
+        ↓
+
+call get_order_status()
+
+        ↓
+
+Database
+
+        ↓
+
+Voice response
+```
+
+---
+
+This is the basic architecture of a **self-hosted production-style LiveKit voice agent**.
+
+For a real production system you would add:
+
+- PostgreSQL conversation storage
+- Redis session management
+- RAG
+- authentication
+- Docker deployment
+- Kubernetes scaling
+- monitoring
+- Twilio SIP integration for phone calls
+
+But the core architecture remains the same.

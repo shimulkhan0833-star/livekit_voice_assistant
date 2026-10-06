@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Alex — Your personal IT assistant</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/livekit-client@2.22.3/dist/livekit-client.umd.min.js"></script>
+  <script defer src="/static/app.js"></script>
+</head>
+<body>
+  <header class="nav"><a class="brand" href="/">a<span class="brand-dot">✦</span> <span>alex<span class="light"> / support</span></span></a><span class="demo-tag">INTERACTIVE DEMO</span></header>
+  <main>
+    <div class="account-bar"><span id="account-label">Continue as a guest, or sign in</span><button id="account-button" class="secondary">Sign in</button></div>
+    <dialog id="auth-dialog" aria-labelledby="auth-title">
+      <button id="auth-close" class="icon-button" aria-label="Close sign in">×</button>
+      <h2 id="auth-title">Welcome back</h2>
+      <p class="auth-note">Use your demo account email and password.<br>This is not Google sign-in. Use a separate demo password.</p>
+      <form id="auth-form">
+        <label for="auth-email">Email address</label><input id="auth-email" type="email" autocomplete="username" maxlength="254" required>
+        <label for="auth-password">Password</label><input id="auth-password" type="password" autocomplete="current-password" minlength="8" maxlength="128" required>
+        <p id="auth-error" role="alert" hidden></p>
+        <button id="auth-submit" class="primary" type="submit">Sign in</button>
+      </form>
+      <button id="auth-switch" class="secondary">New here? Create an account</button>
+    </dialog>
+    <div class="eyebrow"><span></span> A LITTLE HELP. A HUMAN TOUCH.</div>
+    <h1>Tech troubles?<br>Let’s <em>talk it out.</em></h1>
+    <p class="intro">Meet Alex, your AI IT support assistant. A friendly face to help you get unstuck, one conversation at a time.</p>
+    <button class="primary hero-cta" id="open-hero">Talk to Alex <span>↗</span></button>
+    <p class="small">Just your voice. No downloads. No complicated steps.</p>
+    <div class="topics"><span class="topic-label">HERE TO HELP WITH</span><span>Wi-Fi & connection</span><span>Apps & software</span><span>Everyday IT</span></div>
+    <section class="steps" aria-label="How it works"><article><b>01</b><h2>Say hello</h2><p>Open the assistant and allow your microphone.</p></article><article><b>02</b><h2>Show or tell</h2><p>Describe the issue, or share your screen for context.</p></article><article><b>03</b><h2>Work through it</h2><p>Get clear steps. Ask questions. Go at your pace.</p></article></section>
+  </main>
+  <footer>Built for a better support experience.<span>VOICE · VIDEO · SCREEN SHARING</span></footer>
+  <section id="panel" class="panel" aria-label="Talk with Alex" hidden>
+    <header class="panel-head"><div class="mini-avatar">a✦</div><div><strong>Alex</strong><small>Your AI IT assistant</small></div><button id="minimize" class="icon-button" aria-label="Minimize assistant">−</button></header>
+    <div class="stage"><div id="avatar-placeholder"><div class="orb">a<span>✦</span></div><h2>A friendly face.<br>A fresh perspective.</h2><p>Your avatar appears when connected.</p></div><div id="video"></div><span class="stage-label">ALEX / AI ASSISTANT</span><span id="live-label" hidden>● LIVE</span></div>
+    <div class="panel-body"><div class="status-line"><span id="status-dot"></span><strong id="status" role="status" aria-live="polite">Ready when you are</strong><span id="timer">00:00</span></div>
+      <p id="hint">Start a conversation and tell Alex what’s going on.</p>
+      <p id="error" role="alert" hidden></p>
+      <button id="enable-audio" class="secondary" hidden>Enable assistant audio</button>
+      <div id="controls" hidden><button id="mute" class="secondary" aria-pressed="false">Mute mic</button><button id="camera" class="secondary" aria-pressed="false">Camera on</button><button id="share" class="secondary" aria-pressed="false">Share screen</button></div>
+      <div id="camera-preview" hidden><video id="self-video" autoplay muted playsinline></video><span>You · Camera on</span></div>
+      <section class="chat-section" aria-label="Conversation messages">
+        <div class="chat-heading">Conversation <span>Voice & text</span></div>
+        <div id="messages" role="log" aria-live="polite" aria-relevant="additions text"><p id="chat-empty">Your messages and spoken conversation will appear here.</p></div>
+        <form id="chat-form"><label class="sr-only" for="chat-input">Message Alex</label><input id="chat-input" placeholder="Message Alex…" maxlength="4000" autocomplete="off" disabled><button id="send" type="submit" disabled>Send</button></form>
+      </section>
+      <button id="start" class="primary">Start conversation <span>↗</span></button>
+      <button id="end" class="end-button" hidden>End conversation</button>
+      <p class="privacy">Camera is off by default. Turn it on only when you choose.<br>Alex can read shared screens; camera understanding is not enabled.</p>
+    </div>
+  </section>
+  <button id="chathead" aria-label="Open voice assistant" aria-controls="panel" aria-expanded="false"><span class="chat-icon">✦</span><span>Talk to Alex</span><span class="online-dot"></span></button>
+  <div id="audio"></div>
+</body>
+</html>
